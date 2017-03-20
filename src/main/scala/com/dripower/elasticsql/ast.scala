@@ -13,10 +13,10 @@ package object ast {
   sealed trait Literal extends Ast
   case class StringLiteral(value: String) extends Literal
   case class NumericLiteral(value: Long) extends Literal
-  case class BooleanLiteral(value: Long) extends Literal
+  case class BooleanLiteral(value: Boolean) extends Literal
 
   case class Query(
-    select: Seq[Ast],
+    select: Seq[Select],
     from: Seq[Source],
     where: Seq[Op]
   ) extends Ast

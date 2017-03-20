@@ -17,7 +17,7 @@ class Parboiled2Parser(val input: ParserInput) extends PPaarser {
   def Where = rule { ignoreCase("where")}
 
   def Fields = rule {
-   "*" ~ push(Seq(ast.SelectAll)) | oneOrMore(Prop).separatedBy(Sep)
+   "*" ~ push(Seq(ast.SelectAll)) | oneOrMore(Prop).separatedBy(Sep) ~> (_.map(ast.SelectField(_)))
   }
 
 
@@ -32,7 +32,9 @@ class Parboiled2Parser(val input: ParserInput) extends PPaarser {
 
 
   def Literal = rule {
-    capture(Digits) ~> {n => ast.NumericLiteral(n.toInt)} | "'" ~ capture(zeroOrMore("\\\"") | noneOf("\"")) ~ "'" ~> (ast.StringLiteral(_))
+    capture(Digits) ~> {n => ast.NumericLiteral(n.toInt)} |
+    "'" ~ capture(zeroOrMore("\\\"") | noneOf("\"")) ~ "'" ~> (ast.StringLiteral(_)) |
+    ("true" ~ push(true) | "false" ~ push(false)) ~> (ast.BooleanLiteral(_))
   }
 
   def UnaryOp = rule {
@@ -47,7 +49,7 @@ class Parboiled2Parser(val input: ParserInput) extends PPaarser {
     Prop | BinOp | UnaryOp
   }
 
-  def BinOperators = rule(capture("+"|"-"|"*"|"/"|"="|"<>"|">"|"<"))
+  def BinOperators = rule(capture("+"|"-"|"*"|"/"|"="|"<>"|">"|"<"|">="|"<="))
   def UnaryOperators = rule(capture("-"))
   def Operatee = rule(Literal|Prop)
 
